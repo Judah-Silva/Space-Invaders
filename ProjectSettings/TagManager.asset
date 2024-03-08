@@ -3,15 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Bullet
+  - Right Wall
+  - Left Wall
+  - Enemy Projectile
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - projectile
   - Water
   - UI
-  - 
+  - enemy
   - 
   - 
   - 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,10 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
   private Rigidbody2D myRigidbody2D;
+  
+  public delegate void BulletDestroy();
+  public static event BulletDestroy OnBulletDestroy;
+  
 
   public float speed = 5;
     // Start is called before the first frame update
@@ -20,5 +25,11 @@ public class Bullet : MonoBehaviour
     {
       myRigidbody2D.velocity = Vector2.up * speed; 
       Debug.Log("Wwweeeeee");
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+      Destroy(gameObject);
+      OnBulletDestroy.Invoke();
     }
 }
