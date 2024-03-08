@@ -8,6 +8,7 @@ TagManager:
   - Right Wall
   - Left Wall
   - Enemy Projectile
+  - Bottom Wall
   layers:
   - Default
   - TransparentFX

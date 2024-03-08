@@ -31,6 +31,9 @@ public class EnemyProjectile : MonoBehaviour
         {
             Destroy(gameObject);
             OnProjectileDestroy.Invoke();
+        } else if (other.gameObject.CompareTag("Bottom Wall"))
+        {
+            Destroy(gameObject);
         }
     }
 }
