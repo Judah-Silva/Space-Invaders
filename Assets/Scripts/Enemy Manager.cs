@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class EnemyManager : MonoBehaviour
@@ -14,7 +15,9 @@ public class EnemyManager : MonoBehaviour
     public GameObject enemyProjectile;
     public double delay = 300;
     public double alienCount = 55;
-
+    public delegate void gameOver();
+    public static event gameOver OnGameOver; 
+    
     private int _frameCount = 0;
     private bool _direction = true;
     private bool _animate = false;
@@ -23,6 +26,7 @@ public class EnemyManager : MonoBehaviour
     private int _shootCounter = 0;
     private PointManager _pointManager;
     private List<Animator> _animators = new List<Animator>();
+    private bool allowMove = true;
     
     // Start is called before the first frame update
     void Start()
@@ -49,10 +53,10 @@ public class EnemyManager : MonoBehaviour
         _frameCount++;
         if (alienCount == 0)
         {
-            RestartGame();
+            EndGame();
         }
 
-        if (_shootCounter % _shootCount == 0)
+        if (allowMove && _shootCounter % _shootCount == 0)
         {
             Shoot();
             _shootCount = Random.Range(0, 2000);
@@ -83,27 +87,30 @@ public class EnemyManager : MonoBehaviour
 
     void move()
     {
-        if (_down)
+        if (allowMove)
         {
-            grid.transform.position += new Vector3(0, -0.35f, 0);
-            _down = false;
-        }
-        else if (_direction)
-        {
-            grid.transform.position += new Vector3(0.25f, 0, 0);
-        }
-        else
-        {
-            grid.transform.position += new Vector3(-0.25f, 0, 0);
-        }
+            if (_down)
+            {
+                grid.transform.position += new Vector3(0, -0.35f, 0);
+                _down = false;
+            }
+            else if (_direction)
+            {
+                grid.transform.position += new Vector3(0.25f, 0, 0);
+            }
+            else
+            {
+                grid.transform.position += new Vector3(-0.25f, 0, 0);
+            }
 
-        foreach (var animator in _animators)
-        {
-            if (animator.Equals(null)) continue;
-            animator.SetBool("Switch", _animate);
-        }
+            foreach (var animator in _animators)
+            {
+                if (animator.Equals(null)) continue;
+                animator.SetBool("Switch", _animate);
+            }
 
-        _animate = !_animate;
+            _animate = !_animate;
+        }
     }
 
     void Shoot()
@@ -155,9 +162,16 @@ public class EnemyManager : MonoBehaviour
         _animate = true;
     }
 
-    public void RestartGame()
+    public void EndGame()
     {
-        SetupGame();
-        _pointManager.ResetScore();
+        OnGameOver.Invoke();
+        allowMove = false;
+        StartCoroutine(GameOver());
+    }
+
+    IEnumerator GameOver()
+    {
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene("Credits");
     }
 }
